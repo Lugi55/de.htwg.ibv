@@ -9,3 +9,5 @@ build
 htmlcov
 
 ipython-in-depth*
+*.jpg
+.gitignore
