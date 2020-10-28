@@ -1,13 +1,3 @@
-.DS_Store
-.idea
-*.log
-tmp/
-
-*.py[cod]
-*.egg
-build
-htmlcov
-
-ipython-in-depth*
-*.jpg
 .gitignore
+*.jpg
+**/.ipynb_checkpoints
