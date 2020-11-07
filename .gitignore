@@ -9,3 +9,10 @@ build
 htmlcov
 
 ipython-in-depth*
+
+bin/
+include/
+lib/
+lib64
+pyvenv.cfg
+share/
