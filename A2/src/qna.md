@@ -12,4 +12,6 @@
 	- Die Funktion zum Aufhellen so implementieren, dass sich sich dem höchsten Helligkeitswert annähert, aber diesen niemals erlaubt; Die dunkleren Pixel mehr aufhellen, als die eh schon hellen
 5. Damit beim Aufhellen von Bild01 keine Daten verloren gehen, soll eine Lookup-Tabelle verwendet werden. Versuchen Sie mit der Lookup-Tabelle die dunklen Bildbereiche des Bildes aufzuhellen ohne die hellen Bereiche zu stark zu verändern.
 	- Lookup-Tabelle nach Funktion: 
-$$f(x)=\frac{1}{2000} * (x-255)^2$$
+```
+f(x) = 1/2000*(x-255)^2
+```
