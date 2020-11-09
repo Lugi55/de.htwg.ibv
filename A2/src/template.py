@@ -1,4 +1,5 @@
 from PIL import Image
+from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -7,41 +8,34 @@ import glob
 
 
 def compute_Histo(img):
-    histo = np.histogram(img,bins= list(range(0,255)),normed=True)
-    return histo[0]
+    histo = np.zeros(256)
+    for val in img:
+        histo[val] += 1
+    return histo
 
 
 def bin_Histo(img, bin=1):
-    histo = np.histogram(img,bins= list(range(0,bin)),normed=True)
-    return histo[0]
+    histo = np.zeros(256)
+    for val in img:
+        histo[val] += 1
+    bin_histo = np.zeros(bin)
+    histo = np.array_split(histo, bin)
+    for i in range(0, bin):
+        for val in histo[i]:
+            bin_histo[i] += val
+        bin_histo[i] = bin_histo[i] / histo[i].size
+    return bin_histo
 
 
-def brighten(img, offset):
-    for x in range(img.shape[0]):
-        for y in range(img.shape[1]):
-            if img[x,y] > 255-offset:
-                img[x,y] = 255
+def brighten_with_lut(img, lut):
+    print(img.shape)
+    x, y = img.shape
+    for i in range(0, x):
+        for j in range(0, y):
+            if img[i][j] + lut[img[i][j]] < 255:
+                img[i][j] = img[i][j] + lut[img[i][j]]
             else:
-                img[x,y] += offset
-    return img
-
-
-def get_lut(k,p):
-    if p<k:
-        lut = 10
-    else:
-        lut = 0
-    return lut
-
-
-def brighten_with_lut(img,k):
-    for x in range(img.shape[0]):
-        for y in range(img.shape[1]):
-            lut = get_lut(k,img[x,y])
-            if img[x,y] > 255-lut:
-                img[x,y] = 255
-            else:
-                img[x,y] += lut
+                img[i][j] = 255
     return img
 
 
@@ -61,56 +55,61 @@ if __name__ == "__main__":
     images = glob.glob("./img/*.jpg")
 
     for image in images:
-    # read img
-        im = Image.open(image)
+        # read img
+        im = io.imread(image)
         print('==== Pillow Image ====')
-        print(im)
 
         # convert to numpy array
         im = np.array(im)
         print('==== Numpy Image ====')
-        print(im)
 
         # convert to grayscale
         im = rgb2gray(im)
         print('==== Grayscale Image ====')
-        print(im)
 
         # brighten image
 
+        print('==== Histogram ====')
+        histo = compute_Histo(im)
+
+        lut = np.full(256, 0)
+        for i in range(0, lut.size):
+            lut[i] = int(1/2000*(i-255)**2)
+        print(lut)
 
         # brighten image with lut-table
-
+        im = brighten_with_lut(im, lut)
 
         # compute histrogram (without bin-size)
-        histo = compute_Histo(im)
+        histo_lut = compute_Histo(im)
         print('==== Histogram ====')
-        print(histo)
 
         # compute histogram (with bin-size)
         bin_histo = bin_Histo(im, 5)
         print('==== Bin Histogram ====')
-        print(bin_histo)
 
         # plot histogram
         N = histo.size
-        x = range(N)
+        x = range(0,N)
         width = 1
 
         plt.figure(image)
-        plt.subplot(311)
-        plt.bar(x, histo, width, color="blue")
+        plt.subplot(411)
+        plt.bar(x, histo, width=1, color="blue")
         plt.xlim([0,N-1])
+
+        plt.subplot(412)
+        plt.bar(x, histo_lut, width=1, color="green")
 
         N = bin_histo.size
         x = range(N)
         width = 1
 
-        plt.subplot(312)
-        plt.bar(x, bin_histo, width, color="red")
+        plt.subplot(413)
+        plt.bar(x, bin_histo, width=1, color="red")
 
         # plot processed img
-        plt.subplot(313)
+        plt.subplot(414)
         plt.imshow(im, cmap = cm.Greys_r)
 
         plt.show()
