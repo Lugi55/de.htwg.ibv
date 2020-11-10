@@ -21,9 +21,11 @@ def bin_Histo(img, bin=1):
     bin_histo = np.zeros(bin)
     histo = np.array_split(histo, bin)
     for i in range(0, bin):
-        for val in histo[i]:
-            bin_histo[i] += val
-        bin_histo[i] = bin_histo[i] / histo[i].size
+        bin_histo[i] = histo[i].mean()
+    # for i in range(0, bin):
+        # for val in histo[i]:
+            # bin_histo[i] += val
+        # bin_histo[i] = int(bin_histo[i] / histo[i].size)
     return bin_histo
 
 
@@ -85,7 +87,7 @@ if __name__ == "__main__":
         print('==== Histogram ====')
 
         # compute histogram (with bin-size)
-        bin_histo = bin_Histo(im, 5)
+        bin_histo = bin_Histo(im, 4)
         print('==== Bin Histogram ====')
 
         # plot histogram
